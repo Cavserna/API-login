@@ -7,33 +7,33 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = get_user_model()
-        fields = ['name', 'password', 'rol','branch']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['nombre_usuario', 'contrasena', 'rol','sucursal']
+        extra_kwargs = {'contrasena': {'write_only': True}}
         
-    def create(self, validate_data):
-        return get_user_model().objects.create_user(**validate_data)
+    def create(self, validated_data):
+        return get_user_model().objects.create_user(**validated_data)
     
     def update(self,instance,validated_data):
-        password = validated_data.pop('password', None)
+        contrasena = validated_data.pop('contrasena', None)
         user = super().update(instance,validated_data)
         
-        if password:
-            user.set_password(password)
+        if contrasena:
+            user.set_contrasena(contrasena)
             user.save()
             
         return user
     
 class AuthTokenSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    password = serializers.CharField(style={'input_type' : 'password'})
+    nombre_usuario = serializers.CharField()
+    contrasena = serializers.CharField(style={'input_type' : 'contrasena'})
     
     def validate(self, data):
-        name = data.get ('name')
-        password = data.get ('password')
+        nombre_usuario = data.get ('nombre_usuario')
+        contrasena= data.get ('contrasena')
         user = authenticate(
             request=self.context.get('request'),
-            username=name,
-            password=password
+            username=nombre_usuario,
+            contrasena=contrasena
         )
         
         if not user:
